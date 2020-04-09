@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "E:\\A_STUDY\\MobileInternetLabs\\lab1\\code\\examples\\DrawLineSample\\app\\build\\intermediates\\res\\merged\\debug\\values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "E:\\A_STUDY\\MobileInternetLabs\\lab1\\code\\examples\\DrawLineSample\\app\\src\\main\\res\\values\\strings.xml",
+                    "from": {
+                        "startLines": "3,-1",
+                        "startColumns": "4,-1",
+                        "startOffsets": "118,-1",
+                        "endColumns": "54,-1",
+                        "endOffsets": "168,-1"
+                    },
+                    "to": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,110",
+                        "endColumns": "54,62",
+                        "endOffsets": "105,168"
+                    }
+                }
+            ]
+        }
+    ]
+}
