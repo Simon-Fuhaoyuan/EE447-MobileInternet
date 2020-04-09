@@ -1,6 +1,6 @@
 # EE447-MobileInternet
 This repo is for EE447 Mobile Internet Course in SJTU.
-I will upload all files about homework, labs and projects into this repository.
+I will upload all files about homework, labs and projects into this repository. Keep updating...
 
 ## Homework
 HW1: Best order for detecting edges in a joint graph.
