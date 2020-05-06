@@ -16,5 +16,7 @@ Lab1: Implement a Hello world GUI, and make some changes to one of four followin
 
 Lab2: Measurement of WiFi signal Strength, together with a positioning algorithm.
 
+Lab3: QR Code.
+
 ## Project
 Knowledge Entropy
