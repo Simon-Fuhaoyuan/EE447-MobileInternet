@@ -1,0 +1,196 @@
+\documentclass{article}
+\usepackage[UTF8]{ctex}
+\usepackage{CJKutf8}
+\usepackage{color}
+\usepackage{natbib}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{mathrsfs}
+\usepackage{pythonhighlight}
+% java code settings
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\lstset{frame=tb,
+     language=Java,
+     aboveskip=3mm,
+     belowskip=3mm,
+     showstringspaces=false,
+     columns=flexible,
+     basicstyle = \ttfamily\small,
+     numbers=none,
+     numberstyle=\tiny\color{gray},
+     keywordstyle=\color{blue},
+     commentstyle=\color{dkgreen},
+     stringstyle=\color{mauve},
+     breaklines=true,
+     breakatwhitespace=true,
+     tabsize=3
+}
+\geometry{a4paper, scale=0.8}
+
+\title{\textbf{EE447 Lab4 \\ Advisor-Advisee Relationships}}
+\author{付昊源 517021910753}
+\date{May 18, 2020}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Lab Overview}
+This lab focuses on learning basic machine learning methods and implementing them on a specific topic, to find advisor advisee relationships in academic heterogeneous networks. In this Lab, I will use some machine learning tools such as \textit{Keras, Sklearn} and \textit{Tensorflow} to realize my own model based on Python. I partition the methods mentioned in this lab into two categories: traditional method and deep-learning based method.
+
+The traditional method includes \textit{Decision Tree} (DTree in code) and \textit{Support Vector Machine} (SVM in code). These two methods do not include neurons, which means they do not include Neural Network. The deep-learning based method includes a very simple deep-learning model. It includes multiple layers and output a probability vector for each category in a classification task.
+
+In this lab, we have a binary classification problem about the relationship between two coauthors in a paper. The option includes Advisor-Advisee Relationships(AARs) and common coauthor relationship and we hope to get the probability for this relationship to be AARs from our method.
+
+\section{Lab Procedure}
+In practice, the predicted relationship is based on some features. These features may be abstract from the perspective of human, but computer-friendly in models. The features in this lab are provided by a file, but in real tasks, these features are extracted from human-friendly data using various computional methods. The source file also gives the ground truth of relationship, which is used to train and test. Our target is to train the model to be as accurate as possible.
+
+Except for the test precision, training and test velocity is also an important index to evaluate a model. In normal situation, a model with more parameters needs more time to train and test, which means a slower velocity. So the god model should have the least parameters and the highest accuracy. In this report, I will also evaluate the three models mentioned above from three aspects: accuracy, training time and test time.
+
+\subsection{Data Processing}
+For input data, each sample includes two parts: ground truth and features. The ground truth is to distingush AARs or common coauthor relationship. And the features are the extracted features, which includes many values, but we only take the first 22 channels as input features.
+
+Besides, for deep-learning model, the output should be a one-hot vector representing the result. So we should also convert the ground truth into the format of one-hot vector when training the deep-learning model.
+
+\subsection{Support Vector machine}
+For support vector machine, we set a margin and hope all samples can be projected to the space better than the margin. In training process, only samples projected exactly on the margin hyper plane will affect the parameters in the SVM. In theory, the loss function will be formulated as
+\begin{equation}
+\begin{aligned}
+     L(w,b,\alpha)=\frac{1}{2}||w||^2&-\sum_{i=1}^n \alpha_i\left[y_i(w^\top X_i+b)-1\right], \\
+     \min_{w,b} &\max_{\alpha:\alpha_i\ge 0}L(w,b,\alpha)
+\end{aligned}
+\end{equation}
+where $w$ and $b$ are parameters, $X_i$, $y_i$ and $\alpha_i$ is $i^{th}$ feature, label and special weight, respectively. According to KKT condition, only samples satisfying $y_i(w^\top X_i+b)=1$ have $\alpha_i>0$, and $\alpha_i=0$ for other samples.
+
+In training process, the optimization is in multiple steps. First, we fix $\alpha$ and optimize $w$ and $b$. Then, optimize $\alpha$. Next, repeat the first step again, until the loss converges.
+
+In \textit{sklearn.SVM}, all these process is highly packaged so that we can train and test simply by writing codes
+\begin{python}
+     from skl.svm import SVC
+     model =  SVC(kernel="linear")
+     # train
+     model.fit(X_train, y_train)
+     # test
+     predicted =  model.predict(X_test)
+\end{python}
+
+\subsection{Decision Tree}
+The simplest theory of decision tree is to calculate the best threshold for each channel of features so that the final accuracy is the highest. Besides, based on the Shannon Information Entropy,
+\begin{equation}
+     Entropy(t)=-\sum_{i=0}^{c-1}p(i|t)\log_2p(i|t)
+\end{equation}
+we have the following algorithms to construct the decision tree: ID3, C4.5 and Cart. The theory of these algorithms are various.
+
+In \textit{sklearn.tree} we can construct a decision tree and test using the following codes
+\begin{python}
+     from sklearn import tree
+     model =  tree.DecisionTreeClassifier(min_samples_split=40)
+     # train
+     model.fit(X_train,y_train)
+     # test
+     predicted =  model.predict(X_test)
+\end{python}
+
+\subsection{Deep Learning}
+In deep learning, the basic unit is neuron. There is an input and an output of a neuron. A neuron has its weight $w$, bias $b$ and an activate function $f$. Thus, the calculating process of a neuron can be represented as
+\begin{equation}
+     s_{out}=f(w^\top \cdot s_{in}+b)
+\end{equation}
+Note that the weight $w$ and input $s_{in}$ are vectors while bias term $b$ and output $s_{out}$ are scalars. If we want a vector output, we can construct more neurons in a layer.
+
+In this lab, we use the following deep learning model: we first input the 22-dimension vector, and output a 5-dimension vector using sigmoid function. Then, the input is the 5-dimension vector and output a 2-dimension probability vector using softmax funtion. These structures can be coded by
+\begin{python}
+     from keras.models import Sequential
+     model =  Sequential()
+     # input scale
+     model.add(Dense(5, input_shape=(shape_in,))) 
+     model.add(Activation('sigmoid'))
+     # output scale
+     model.add(Dense(2))
+     model.add(Activation('softmax'))
+\end{python}
+
+After constructing the model, we should also give the optimizer, loss function, batch size, max epoch and other hyper parameters. Finally, we should train and test. The codes for these parts are
+\begin{python}
+     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+     model.fit(X_train, y_train, nb_epoch=5, batch_size=5, verbose=1)
+     loss, accuracy =   model.evaluate(X_test, y_test, verbose=0)
+\end{python}
+
+\section{Experiments}
+In this section, I will show the experiment results when I train and test different methods or different settings of one methods. The metric includes training time, test time, accuracy and recall accuracy (represented as recall in the following tables)
+
+\subsection{Comparision among three methods}
+First I will overview the comparision among all three methods mentioned in this report. Note that the kernel in SVM is 'linear' and the structure as well as hyper parameters of deep learning method is originally set as shown in section 2.4. The result is shown in Table 1.
+\begin{table}[h]
+     \centering
+     \begin{tabular}{cccc}
+         \hline
+         Method & SVM & Determine Tree & Deep Learning \\
+         \hline
+         Training Time & 1223.8s & 0.156s & 63.13s \\
+         Test Time & 2.623s & 0.014s & 7.8s \\
+         Accuracy & 94.13\% & 94.52\% & 94.20\% \\
+         Recall & 94.18\% & 94.76\% & - \\
+         \hline
+     \end{tabular}
+     \caption{The comparision among three different machine learning methods.}
+ \end{table}
+
+ This result means the determine tree method is definitely the most suitable to this task. However, this experiment result can only show the super advantage of determine tree in this single task, but not all tasks. We should find different optimal method for different task in experiments.
+
+\subsection{Different Kernels for SVM}
+In support vector machine theory, when the dataset is not linear partitionable, we usually use kernel-based SVM so that we can partition the dataset in a higher space. Different kernels may also produce different effects to the same task. The results are shown in Table 2. Note that due to the time consuming of SVM training process, I set each model having at most $1,000,000$ iterations to train.
+\begin{table}[h]
+     \centering
+     \begin{tabular}{ccccc}
+         \hline
+         Kernel & Linear & RBF & Poly & Sigmoid \\
+         \hline
+         Training Time & 74.536s & 25.297s & 59.502s & 1.192s \\
+         Test Time & 3.022s & 56.134s & 1.151s & 6.778s \\
+         Accuracy & 81.89\% & 72.65\% & 73.24\% & 80.74\% \\
+         Recall & 95.57\% & 49.57\% & 48.30\% & 80.14\% \\
+         \hline
+     \end{tabular}
+     \caption{The comparision among different kernels in SVM.}
+\end{table}
+
+From the result, we can conclude that Linear kernel SVM, which is just the none-kernel SVM, has the best performance. In real use, test time and accuracy is more important. Another interesting property is that RBF kernel need significantly longer time to test. This is because in kernel-based SVM, we must calculate the kernel matrix for the ease to compute, and RBF kernel has the most complex process to calculate this kernel matrix, so it it the most time consuming.
+
+\subsection{Different Structure of Deep Learning}
+In deep learning, we can design various structure of network to fit a dataset. Besides, a more complex network need more time to train and test, but it can also extract deeper features. In real use, we should find the balance between training time and network complexity. In this experiment, I tried some different structures and compare their performance. The structures are represented by the channels of outputs in each layer. Other hyper parameters do not change during the experiments. The result is shown in Table3
+
+\begin{table}[h]
+     \centering
+     \begin{tabular}{cccc}
+         \hline
+         Structure & $22\rightarrow 2$  & $22\rightarrow 5\rightarrow 2$ & $22\rightarrow 5 \rightarrow 32 \rightarrow 2$\\
+         \hline
+         Training Time & 42.476s & 63.13s & 71.546s \\
+         Test Time & 6.395s & 7.8s & 9.112s \\
+         Accuracy & 94.11\% & 94.20\% & 94.32\% \\
+         \hline
+     \end{tabular}
+     \caption{The comparision among different structures of networks in deep learning.}
+\end{table}
+
+Table 3 verifies the truth that a deeper network with more layers need more time to train and test, though the max epoch is the same. Besides, the accuracy will also be higher if the network is more complex.
+
+\section{Conlusion and Future Work}
+In this lab, I have learnt some traditional machine learning methods as well as basic deep learning methods. From experiments, I also conclude that there is not a god method suitable for all tasks in this world. However, we must find the most suitable method for each task to get the best performance. 
+
+In this task, since the data is really simple and distingushable, determine tree can handle this task well. In reverse, if we deliberately make the features more complex, the performance may not be that good, which is shown at RBF kernel in SVM. So each method has its upper bound and lower bound for the complexity. Too high or too low complexity of features will have negative effect to the task itself.
+
+Despite the experiments in section 3, we can also do experiments on various optimizer, batch size, max epoch, loss function, etc. These settings will all have some effects on the final performance of a deep learning model.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
