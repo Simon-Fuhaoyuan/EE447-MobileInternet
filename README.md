@@ -7,6 +7,8 @@ HW1: Best order for detecting edges in a joint graph.
 
 HW2: Double-spending problem in bitcoin.
 
+HW3: Paper Reading and Comprehension.
+
 ## Lab (All for android programming)
 Lab1: Implement a Hello world GUI, and make some changes to one of four following examples.
 * Draw line sample
@@ -17,6 +19,11 @@ Lab1: Implement a Hello world GUI, and make some changes to one of four followin
 Lab2: Measurement of WiFi signal Strength, together with a positioning algorithm.
 
 Lab3: QR Code.
+
+lab4: Advisor-Advisee Relationship.
+* Support Vector Machine
+* Determine Tree
+* Deep Learning Model
 
 ## Project
 Knowledge Entropy
