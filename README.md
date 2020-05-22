@@ -9,7 +9,9 @@ HW2: Double-spending problem in bitcoin.
 
 HW3: Paper Reading and Comprehension.
 
-## Lab (All for android programming)
+HW4: Multi-hop in ER Network.
+
+## Labs
 Lab1: Implement a Hello world GUI, and make some changes to one of four following examples.
 * Draw line sample
 * Group messages
